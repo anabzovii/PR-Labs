@@ -16,6 +16,7 @@ client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 client_socket.connect((HOST, PORT))
 print(f"Connected to {HOST}:{PORT}")
 
+
 # Function to download a file from the server
 def download_file(payload, client_name):
     # Extract file name and content from the payload
@@ -32,6 +33,7 @@ def download_file(payload, client_name):
 
     print(f"\nReceived file: {name}")
 
+
 # Function to list files in the client's directory
 def list_client_files(folder_path):
     files = []
@@ -39,6 +41,7 @@ def list_client_files(folder_path):
         if os.path.isfile(os.path.join(folder_path, filename)):
             files.append(filename)
     return files
+
 
 # Function to handle media files in the payload
 def media_files(payload):
@@ -50,6 +53,20 @@ def media_files(payload):
             print(f"{i}. {name}")
     else:
         print("\nNo files available.")
+
+
+def get_file_path():
+    file_path = input("Enter the path to the file: ")
+    if not file_path:
+        print("Invalid file path.")
+        return
+
+    if not os.path.exists(file_path):
+        print("File not found.")
+        return
+
+    return file_path
+
 
 # Function to continuously receive messages from the server
 def receive_messages():
@@ -76,6 +93,7 @@ def receive_messages():
 
         except json.JSONDecodeError:
             print(f"\nReceived: {message}")
+
 
 # Get the client's username and room name
 client_name = input("Enter your username: ")
@@ -110,42 +128,25 @@ while True:
 
     elif text.lower() == 'u':
         # Upload files to the server
-        if not os.path.exists(f"files_{client_name}"):
-            os.makedirs(f"files_{client_name}")
+        file_path = get_file_path()
 
-        file_list = list_client_files(f"files_{client_name}")
+        if not file_path:
+            continue
 
-        if not file_list:
-            print("No files found in your downloads/uploads directory.")
-        else:
-            print("Files for upload:")
-            for i, name in enumerate(file_list, start=1):
-                print(f"{i}. {name}")
+        file_name = os.path.basename(file_path)
 
-            try:
-                file_choice = int(input("Enter the file to upload: ")) - 1
+        with open(file_path, "rb") as file:
+            content = base64.b64encode(file.read()).decode('utf-8')
 
-                if 0 <= file_choice < len(file_list):
-                    selected_file = file_list[file_choice]
-                    file_path = os.path.join(f"files_{client_name}", selected_file)
-
-                    with open(file_path, "rb") as file:
-                        content = base64.b64encode(file.read()).decode('utf-8')
-
-                    upload_file_message = {
-                        "message_type": "upload",
-                        "payload": {
-                            "file_name": selected_file,
-                            "file_content": content,
-                        }
-                    }
-                    client_socket.send(json.dumps(upload_file_message).encode('utf-8'))
-                    continue
-                else:
-                    continue
-                print("Invalid input. Please enter a valid file.")
-            except:
-                print("Invalid input. Please enter a valid file.")
+        upload_file_message = {
+            "message_type": "upload",
+            "payload": {
+                "file_name": file_name,
+                "file_content": content,
+            }
+        }
+        client_socket.send(json.dumps(upload_file_message).encode('utf-8'))
+        continue
 
     elif text.lower() == 'm':
         # Request a list of media files from the server
