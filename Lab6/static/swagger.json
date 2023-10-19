@@ -1,0 +1,164 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Access API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/api/electro-scooters/{id}": {
+        "get": {
+          "description": "Returns a scooter with the given ID",
+          "consumes": [
+            "id"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the scooter to return",
+              "required": true,
+              "type": "integer"
+            }],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            },
+            "400": {
+              "description": "Invalid ID supplied"
+            }
+          }
+        },
+        "put": {
+          "description": "Updates a scooter with the given ID",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the scooter to update",
+              "required": true,
+              "type": "integer"
+            },
+            {
+              "name": "Scooter",
+              "in": "body",
+              "description": "JSON data for the scooter",
+              "required": true,
+              "schema": {
+                  "$ref": "#/definitions/ElectroScooter"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Electro scooter updated successfully"
+            },
+            "400": {
+              "description": "Invalid request data"
+            }
+          }
+        },
+        "delete": {
+          "description": "Delete a scooter with the given ID",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "ID of the scooter to delete",
+              "required": true,
+              "type": "integer"
+            },
+            {
+              "name": "X-Delete-Password",
+              "in": "header",
+              "description": "Password for deletion",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Electro scooter deleted successfully"
+            },
+            "400": {
+              "description": "Invalid request data"
+            }
+          }
+        }
+      },
+      "/api/electro-scooters": {
+        "get": {
+          "description": "Returns the list of all scooters",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "List of scooters"
+            },
+            "400": {
+              "description": "Invalid request data"
+            }
+          }
+        },
+        "post": {
+          "description": "Add an electro scooter",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "Scooter",
+              "in": "body",
+              "description": "JSON data for adding a scooter",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/ElectroScooter"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Scooter added successfully"
+            },
+            "400": {
+              "description": "Invalid request data"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "ElectroScooter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "battery_level": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
