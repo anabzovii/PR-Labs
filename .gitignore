@@ -1,0 +1,4 @@
+.DS_Store/
+Lab7/venv/
+Lab7/__pycache__/
+*.idea/
